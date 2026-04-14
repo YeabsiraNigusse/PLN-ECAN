@@ -1,0 +1,2 @@
+"=== Total PLN premises loaded ==="
+"=== Query: ant -> arthropod (2-hop) ==="

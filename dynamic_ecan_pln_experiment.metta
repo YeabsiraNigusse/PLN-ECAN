@@ -1,19 +1,3 @@
-;; ============================================================
-;;    ECAN + PLN Integration Experiment (Incident-Atom Space)
-;; ============================================================
-;; Uses the main branch metta-attention architecture with the
-;; real incident-atom space (`incident_final.pl`) for importance
-;; diffusion, combined with biology taxonomy data.
-;;
-;; Pipeline:
-;;   1. Load wordnet + biology KB into TypeSpace for STV
-;;   2. Load `incident_final.pl` (with appended biology) into &incidentSpace
-;;   3. Read article → stimulate atoms → ECAN diffuses via incident graph
-;;   4. getAfAtoms → get important atoms (links and nodes)
-;;   5. Bridge: match AF link-atoms against &biology KB → PLN Sentences
-;;   6. PLN.Query deduces new knowledge from filtered premises
-;; ============================================================
-
 ;; --- PeTTa libs (for static-import and PLN) ---
 !(import! &self ../PeTTa/lib/lib_import)
 !(import! &self ../PeTTa/lib/lib_spaces)
@@ -76,12 +60,6 @@
 !(updateAttentionParam FUNDS_LTI 100000.0)
 !(updateAttentionParam TOPK 0.5)
 
-;; ============================================================
-;; PHASE 2 — ECAN ATTENTION ALLOCATION (Article Reading)
-;; ============================================================
-;; Simulate reading an article about insects sentence by sentence.
-;; Stimulate atoms from the sentences and run ECAN agents in batches.
-
 (= (batch) 5)
 (= (reader $expr $counter)
     (if (== $expr ())
@@ -105,19 +83,6 @@
 
 ;; Start reading the insect sentences
 !(reader (match &insect (biologySent $x) $x) 0)
-
-;; ============================================================
-;; PHASE 3 — DYNAMIC BRIDGE: ECAN ↔ PLN LOOP
-;; ============================================================
-;; Dynamic AF computation:
-;;   1. Run ECAN to get current AF atoms
-;;   2. Bridge: Filter KB using current AF
-;;   3. Run one PLN query 
-;;   4. New deductions may generate new atoms/facts
-;;   5. Re-run ECAN with enriched atom space → AF shifts
-;;   6. Repeat for next query with NEW AF
-;;
-;; This allows AF to evolve as PLN discovers new knowledge.
 
 !(bind! &pln-kb (new-space))
 !(bind! &pln-results (new-space))
@@ -177,17 +142,6 @@
     )
 )
 
-;; ============================================================
-;; PHASE 4 — DYNAMIC PLN REASONING WITH AF LOOPS
-;; ============================================================
-;; Instead of running all queries on a FROZEN AF,
-;; queries are run DYNAMICALLY where:
-;;   - Before each query: ECAN re-runs (recompute-af)
-;;   - After each query: New premises/atoms may exist
-;;   - Next query starts with UPDATED AF
-;;
-;; This implements the "dynamic" pattern where AF evolves during inference.
-
 ;; Get-current-premises: Dynamically fetch premises from pln-kb
 (= (get-current-premises)
     (collapse (match &pln-kb $atom $atom))
@@ -195,10 +149,6 @@
 
 ;; STV base rates for concepts (needed by PLN deduction formula)
 (= (STV (Concept $any)) (stv 0.1 0.9))
-
-;; ============================================================
-;; DYNAMIC QUERIES - AF RECOMPUTED EACH TIME
-;; ============================================================
 
 ;; ============================================================
 ;; DYNAMIC QUERIES - AF RECOMPUTED EACH TIME
