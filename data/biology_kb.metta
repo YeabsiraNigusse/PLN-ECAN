@@ -1,6 +1,3 @@
-
-
-
 ((InheritanceLink ant insect) (0.90 0.90))
 ((InheritanceLink bee insect) (0.90 0.90))
 ((InheritanceLink butterfly insect) (0.85 0.90))

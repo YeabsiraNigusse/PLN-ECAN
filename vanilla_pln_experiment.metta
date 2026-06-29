@@ -45,16 +45,17 @@
 
 ;; Query: ant → arthropod (2-hop: ant→insect→arthropod)
 !(println! "=== Query: ant -> arthropod (2-hop) ===")
-!(PLN.Query (collapse (match &pln-kb-full $atom $atom)) (Inheritance (Concept ant) (Concept arthropod)) 30)
+!(PLN.Query (collapse (match &pln-kb-full $atom $atom)) (Inheritance (Concept ant) (Concept arthropod)) 10)
 
 ;; Query: bee → arthropod (2-hop: bee→insect→arthropod)
 !(println! "=== Query: bee -> arthropod (2-hop) ===")
-!(PLN.Query (collapse (match &pln-kb-full $atom $atom)) (Inheritance (Concept bee) (Concept arthropod)) 30)
+!(PLN.Query (collapse (match &pln-kb-full $atom $atom)) (Inheritance (Concept bee) (Concept arthropod)) 10)
 
 ;; Query: ant → invertebrate (3-hop: ant→insect→arthropod→invertebrate)
 !(println! "=== Query: ant -> invertebrate (3-hop) ===")
-!(PLN.Query (collapse (match &pln-kb-full $atom $atom)) (Inheritance (Concept ant) (Concept invertebrate)) 50)
+!(PLN.Query (collapse (match &pln-kb-full $atom $atom)) (Inheritance (Concept ant) (Concept invertebrate)) 10)
 
 ;; Query: ant → animal (4-hop: ant→insect→arthropod→invertebrate→animal)
 !(println! "=== Query: ant -> animal (4-hop) ===")
-!(PLN.Query (collapse (match &pln-kb-full $atom $atom)) (Inheritance (Concept ant) (Concept animal)) 60)
+!(PLN.Query (collapse (match &pln-kb-full $atom $atom)) (Inheritance (Concept ant) (Concept animal)) 10)
+
