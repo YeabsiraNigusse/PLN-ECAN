@@ -11,32 +11,32 @@
 !(static-import! &wordnet ../metta-attention/experiments/data/wordnet_stv_clean)
 
 ;; --- Load article sentences and biology KB ---
-!(bind! &insect (new-space))
-!(bind! &biology (new-space))
-!(import! &biology data/biology_kb)
-!(import! &insect article)
+!(let $_ (bind! &insect (new-space)) (empty))
+!(let $_ (bind! &biology (new-space)) (empty))
+!(let $_ (import! &biology data/biology_kb) (empty))
+!(let $_ (import! &insect article) (empty))
 
 ;; --- ECAN modules (main branch) ---
-!(import! &self ../metta-attention/attention/AttentionParam)
-!(import! &self ../metta-attention/attention/baching)
-!(import! &self ../metta-attention/attention-bank/utilities/helper-functions)
-!(import! &self ../metta-attention/attention-bank/utilities/recentVal)
-!(import! &self ../metta-attention/attention-bank/attention-value/getter-and-setter)
-!(import! &self ../metta-attention/attention-bank/bank/attention-bank)
-!(import! &self ../metta-attention/attention-bank/bank/attentional-focus/attentional-focus)
-!(import! &self ../metta-attention/attention-bank/bank/importance-index/importance-index)
-!(import! &self ../metta-attention/attention/Neighbors)
-!(import! &self ../metta-attention/attention-bank/bank/stochastic-importance-diffusion/stochastic-importance-diffusion)
-!(import! &self ../metta-attention/attention/RentCollectionAgent/RentCollectionBaseAgent/RentCollectionBaseAgent)
-!(import! &self ../metta-attention/attention/RentCollectionAgent/WARentCollectionAgent/WARentCollectionAgent)
-!(import! &self ../metta-attention/attention/RentCollectionAgent/AFRentCollectionAgent/AFRentCollectionAgent)
-!(import! &self ../metta-attention/attention/ImportanceDiffusionAgent/ImportanceDiffusionBase/ImportanceDiffusionBase)
-!(import! &self ../metta-attention/attention/ImportanceDiffusionAgent/WAImportanceDiffusionAgent/WAImportanceDiffusionAgent)
-!(import! &self ../metta-attention/attention/ImportanceDiffusionAgent/AFImportanceDiffusionAgent/AFImportanceDiffusionAgent)  ;; Python dependency
-!(import! &self ../metta-attention/attention/HebbianUpdatingAgent/HebbianUpdatingAgent)
-!(import! &self ../metta-attention/attention/HebbianCreationAgent/HebbianCreationAgent)
-!(import! &self ../metta-attention/attention/runner-Def)
-!(import! &self "../metta-attention/attention/ImportanceDiffusionAgent/getelement.py")  ;; Python helper for AF diffusion top-k
+!(let $_ (import! &self ../metta-attention/attention/AttentionParam) (empty))
+!(let $_ (import! &self ../metta-attention/attention/baching) (empty))
+!(let $_ (import! &self ../metta-attention/attention-bank/utilities/helper-functions) (empty))
+!(let $_ (import! &self ../metta-attention/attention-bank/utilities/recentVal) (empty))
+!(let $_ (import! &self ../metta-attention/attention-bank/attention-value/getter-and-setter) (empty))
+!(let $_ (import! &self ../metta-attention/attention-bank/bank/attention-bank) (empty))
+!(let $_ (import! &self ../metta-attention/attention-bank/bank/attentional-focus/attentional-focus)(empty))
+!(let $_ (import! &self ../metta-attention/attention-bank/bank/importance-index/importance-index)(empty))
+!(let $_ (import! &self ../metta-attention/attention/Neighbors)(empty))
+!(let $_ (import! &self ../metta-attention/attention-bank/bank/stochastic-importance-diffusion/stochastic-importance-diffusion)(empty))
+!(let $_ (import! &self ../metta-attention/attention/RentCollectionAgent/RentCollectionBaseAgent/RentCollectionBaseAgent)(empty))
+!(let $_ (import! &self ../metta-attention/attention/RentCollectionAgent/WARentCollectionAgent/WARentCollectionAgent)(empty))
+!(let $_ (import! &self ../metta-attention/attention/RentCollectionAgent/AFRentCollectionAgent/AFRentCollectionAgent)(empty))
+!(let $_ (import! &self ../metta-attention/attention/ImportanceDiffusionAgent/ImportanceDiffusionBase/ImportanceDiffusionBase)(empty))
+!(let $_ (import! &self ../metta-attention/attention/ImportanceDiffusionAgent/WAImportanceDiffusionAgent/WAImportanceDiffusionAgent)(empty))
+!(let $_ (import! &self ../metta-attention/attention/ImportanceDiffusionAgent/AFImportanceDiffusionAgent/AFImportanceDiffusionAgent)(empty))  ;; Python dependency
+!(let $_ (import! &self ../metta-attention/attention/HebbianUpdatingAgent/HebbianUpdatingAgent)(empty))
+!(let $_ (import! &self ../metta-attention/attention/HebbianCreationAgent/HebbianCreationAgent)(empty))
+!(let $_ (import! &self ../metta-attention/attention/runner-Def)(empty))
+!(let $_ (import! &self "../metta-attention/attention/ImportanceDiffusionAgent/getelement.py")(empty))  ;; Python helper for AF diffusion top-k
 
 ;; ============================================================
 ;; PHASE 1 — LOAD KB INTO TYPESPACE & CONFIGURE ECAN
@@ -47,9 +47,9 @@
     (let $space (TypeSpace) (add-atom $space ($pattern (STV $mean $conf))))
 )
 ;; Load wordnet atoms into TypeSpace (gives STV to nodes)
-!(collapse (match &wordnet ($atom ($mean $conf)) (setStv $atom ($mean $conf) true)))
+!(let $_ (collapse (match &wordnet ($atom ($mean $conf)) (setStv $atom ($mean $conf) true))) (empty))
 ;; Load biology KB atoms into TypeSpace
-!(collapse (match &biology ($atom ($mean $conf)) (setStv $atom ($mean $conf) true)))
+!(let $_ (collapse (match &biology ($atom ($mean $conf)) (setStv $atom ($mean $conf) true))) (empty))
 
 ;; Configure ECAN params
 !(updateAttentionParam MAX_AF_SIZE 50.0)
@@ -116,7 +116,6 @@
 (= (rebuild-kb-from-current-af)
     (let* (
         ($afAtoms (getAfAtoms))
-        ($_reset (bind! &pln-kb (new-space)))
         ($_bridge (collapse (match &biology ((InheritanceLink $a $b) ($s $c))
                      (if (and (isMember $a $afAtoms) (isMember $b $afAtoms))
                          (add-atom &pln-kb (Sentence ((Inheritance (Concept $a) (Concept $b)) (stv $s $c)) ((ev $a $b))))
@@ -178,6 +177,7 @@
                         (add-atom &pln-kb (Sentence ((Inheritance (Concept $a) (Concept $b)) (stv $s $c)) ((ev $a $b))))
                         (empty))))))
       True)
+
 !(let $premises (get-current-premises)
     (if (== $premises ())
         (println! (QUERY-SKIPPED-EMPTY-KB "DYNAMIC-Q1"))
@@ -190,6 +190,9 @@
 
 !(println! "\n========== ECAN SHIFT POINT: AF may have evolved ==========\n")
 
+
+
+
 ;; ITERATION 2: bee → arthropod (2-hop: bee→insect→arthropod)
 !(println! (QUERY "DYNAMIC-Q2: bee->arthropod (2-hop)"))
 !(collapse (test-superpose &incidentSpace))
@@ -200,6 +203,8 @@
                         (add-atom &pln-kb (Sentence ((Inheritance (Concept $a) (Concept $b)) (stv $s $c)) ((ev $a $b))))
                         (empty))))))
       True)
+
+
 !(let $premises (get-current-premises)
     (if (== $premises ())
         (println! (QUERY-SKIPPED-EMPTY-KB "DYNAMIC-Q2"))
@@ -212,6 +217,10 @@
 
 !(println! "\n========== ECAN SHIFT POINT: AF may have evolved ==========\n")
 
+
+
+
+
 ;; ITERATION 3: ant → invertebrate (3-hop: ant→insect→arthropod→invertebrate)
 !(println! (QUERY "DYNAMIC-Q3: ant->invertebrate (3-hop)"))
 !(collapse (test-superpose &incidentSpace))
@@ -222,6 +231,8 @@
                         (add-atom &pln-kb (Sentence ((Inheritance (Concept $a) (Concept $b)) (stv $s $c)) ((ev $a $b))))
                         (empty))))))
       True)
+
+
 !(let $premises (get-current-premises)
     (if (== $premises ())
         (println! (QUERY-SKIPPED-EMPTY-KB "DYNAMIC-Q3"))
@@ -233,6 +244,9 @@
           (println! (QUERY-COMPLETE "DYNAMIC-Q3")))))
 
 !(println! "\n========== ECAN SHIFT POINT: AF may have evolved ==========\n")
+
+
+
 
 ;; ITERATION 4: ant → animal (4-hop: ant→insect→arthropod→invertebrate→animal)
 !(println! (QUERY "DYNAMIC-Q4: ant->animal (4-hop)"))
