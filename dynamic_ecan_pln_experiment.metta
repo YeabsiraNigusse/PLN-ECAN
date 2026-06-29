@@ -1,6 +1,7 @@
 ;; --- PeTTa libs (for static-import and PLN) ---
 !(import! &self ../PeTTa/lib/lib_import)
 !(import! &self ../PeTTa/lib/lib_spaces)
+!(import! &self ../PeTTa/lib/lib_he)
 !(import! &self ../PeTTa/lib/lib_pln)
 
 ;; --- Load real incident data (Wordnet + appended Biology neighbor graph) ---
@@ -31,11 +32,11 @@
 !(import! &self ../metta-attention/attention/RentCollectionAgent/AFRentCollectionAgent/AFRentCollectionAgent)
 !(import! &self ../metta-attention/attention/ImportanceDiffusionAgent/ImportanceDiffusionBase/ImportanceDiffusionBase)
 !(import! &self ../metta-attention/attention/ImportanceDiffusionAgent/WAImportanceDiffusionAgent/WAImportanceDiffusionAgent)
-;!(import! &self ../metta-attention/attention/ImportanceDiffusionAgent/AFImportanceDiffusionAgent/AFImportanceDiffusionAgent)  ;; Python dependency
+!(import! &self ../metta-attention/attention/ImportanceDiffusionAgent/AFImportanceDiffusionAgent/AFImportanceDiffusionAgent)  ;; Python dependency
 !(import! &self ../metta-attention/attention/HebbianUpdatingAgent/HebbianUpdatingAgent)
 !(import! &self ../metta-attention/attention/HebbianCreationAgent/HebbianCreationAgent)
 !(import! &self ../metta-attention/attention/runner-Def)
-;!(import! &self "../metta-attention/attention/ImportanceDiffusionAgent/getelement.py")  ;; Commented: Python module not needed
+!(import! &self "../metta-attention/attention/ImportanceDiffusionAgent/getelement.py")  ;; Python helper for AF diffusion top-k
 
 ;; ============================================================
 ;; PHASE 1 — LOAD KB INTO TYPESPACE & CONFIGURE ECAN
@@ -61,28 +62,41 @@
 !(updateAttentionParam TOPK 0.5)
 
 (= (batch) 5)
+
+(= (runAttentionBatch)
+    (let $_agents (collapse (test-superpose &incidentSpace))
+        True
+    )
+)
+
 (= (reader $expr $counter)
     (if (== $expr ())
-        (empty)
+        True
         (let* 
             (
                 ($now (car-atom $expr))
                 ($rest (cdr-atom $expr))
-            )
-            ( 
-                (stimulate $now 100)
-                (println! (stimulating atom --> $now))
-                (if (or (== (% $counter (batch)) 0) (== $rest ()))
-                   (collapse (test-superpose &incidentSpace)) 
-                   (println! (agent not called))
+                ($_stim (collapse (stimulate $now 100)))
+                ($_stimlog (println! (stimulating atom --> $now)))
+                ($_batch
+                    (if (or (== (% $counter (batch)) 0) (== $rest ()))
+                        (runAttentionBatch)
+                        (let $_skiplog (println! (agent not called))
+                            True
+                        )
+                    )
                 )
-                (reader $rest (+ $counter 1)))
+                ($_next (reader $rest (+ $counter 1)))
+            )
+            True
          )
     )    
 )
 
 ;; Start reading the insect sentences
-!(reader (match &insect (biologySent $x) $x) 0)
+; !(reader (match &insect (biologySent $x) $x) 0)
+!(let $_ (collapse (match &insect (biologySent $x) (reader $x 0))) (empty))
+
 
 !(bind! &pln-kb (new-space))
 !(bind! &pln-results (new-space))
