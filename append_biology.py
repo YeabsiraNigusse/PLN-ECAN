@@ -52,3 +52,24 @@ with open(incident_file, 'a') as f:
             f.write(prolog_line)
 
 print("Done appending biology data to incident_final.pl!")
+
+
+# ; today meeting topics
+
+# ; 1 visited few codebases
+#    ; 1.1 hypothesis generation
+#    ; 1.2 mathimatics for ai(atp)
+
+# ; 2 ask them any suggestion including if there is existing pln-ecan experiment codebase
+
+# ; 3 optional - show them the current trial
+# ; 4 go the fluid dynamic implementation
+
+
+
+# next task related with experiment could be 
+
+# 1 looking in detail how the backward chainer works and where and why exactlly the combinatorial explosion occurs
+# 2 investigate if ecan can mitigate this combinatorial explosion
+# 3 pick a project and apply the solution found in step 2
+
